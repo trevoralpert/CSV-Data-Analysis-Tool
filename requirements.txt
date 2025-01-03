@@ -1,0 +1,10 @@
+langchain
+gradio
+streamlit
+openai
+tiktoken
+python-dotenv
+pinecone-client
+langchain-community
+langchain_experimental.agents
+pandas
