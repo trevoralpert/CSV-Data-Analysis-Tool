@@ -34,5 +34,5 @@ The app enables users to upload a CSV file, input a natural language query, and 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/csv-query-analysis-app.git
+   git clone https://github.com/trevoralpert/csv-query-analysis-app.git
    cd csv-query-analysis-app
