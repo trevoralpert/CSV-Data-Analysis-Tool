@@ -14,4 +14,4 @@ button = st.button("Generate Response")
 
 if button:
 	answer = query_agent(data, query)
-	st.write("answer")
+	st.write(answer)
