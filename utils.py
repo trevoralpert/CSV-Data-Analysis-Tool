@@ -1,32 +1,24 @@
-
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-
-
-import pandas as pd
-from langchain_community.chat_models import ChatOpenAI
-from langchain.chat_models import ChatOpenAI
 from langchain_openai import ChatOpenAI
+from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
+import pandas as pd
 
 def query_agent(data, query):
-    # Load the CSV file into a Pandas DataFrame
-    df = pd.read_csv(data)
+    try:
+        data.seek(0)
+        df = pd.read_csv(data, encoding="utf-8")
+    except UnicodeDecodeError:
+        data.seek(0)
+        df = pd.read_csv(data, encoding="latin1")
 
-    # Initialize the OpenAI model
+    # Limit DataFrame to first 100 rows and 10 columns to avoid token limit errors
+    MAX_ROWS = 20
+    MAX_COLS = 5
+    if len(df) > MAX_ROWS:
+        df = df.head(MAX_ROWS)
+    if len(df.columns) > MAX_COLS:
+        df = df[df.columns[:MAX_COLS]]
+
     llm = ChatOpenAI(model_name="gpt-4", temperature=0)
-
-    # Create a custom prompt template for CSV analysis
-    prompt = PromptTemplate(
-        input_variables=["query", "dataframe"],
-        template=(
-            "You are an AI specialized in analyzing tabular data. Here is the data:\n\n{dataframe}\n\n"
-            "Respond to the following query: {query}"
-        ),
-    )
-
-    # Format the data and query
-    formatted_prompt = prompt.format(query=query, dataframe=df.to_string())
-
-    # Get the response
-    response = llm.predict(formatted_prompt)
-    return response
+    agent = create_pandas_dataframe_agent(llm, df, verbose=False, allow_dangerous_code=True)
+    response = agent.invoke({"input": query})
+    return response["output"] if isinstance(response, dict) and "output" in response else str(response)

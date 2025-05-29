@@ -6,5 +6,9 @@ tiktoken
 python-dotenv
 pinecone-client
 langchain-community
-langchain_experimental.agents
+langchain-experimental
+langchain-openai
 pandas
+langchain-core
+watchdog
+tabulate
